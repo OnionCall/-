@@ -9,7 +9,7 @@ import (
 func main() {
 	services.Clear()
 	env := common.GetEnvironment()
-	common.SetEnvironment(env.Develop)
+	common.SetEnvironment(env.Production)
 
 	common.LatestMessageId = 0
 	welcome.Execute()
