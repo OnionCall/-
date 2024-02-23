@@ -10,6 +10,12 @@ To install dependencies, use the command
 go mod download
 ```
 
+To run
+
+```bash
+go run .
+```
+
 to build an executable 
 
 ```bash
