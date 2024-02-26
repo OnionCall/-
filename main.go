@@ -14,4 +14,3 @@ func main() {
 	common.LatestMessageId = 0
 	welcome.Execute()
 }
-

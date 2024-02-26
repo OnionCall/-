@@ -22,33 +22,35 @@ type userResponse struct {
 
 func CreateUser(groupId int, displayName string) common.UserDetails {
 	user := createUserDto{GroupId: groupId, DisplayName: displayName}
-	url := fmt.Sprintf("%v/userdetails/", common.Env)
+	url := fmt.Sprintf("%v/admin/userdetails/", common.Env)
 	contentType := "application/json"
 	
-
+	
 	jsonData, err := json.Marshal(user)
 	if err != nil {
 		fmt.Println(err)
 		return common.UserDetails{}
 	}
-
-	r, err := http.Post(url, contentType, bytes.NewBuffer(jsonData))
+	
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Println(err)
 	}
 
-	if (r.StatusCode != 200) {
-		log.Println("Failed to create user")
+	resp, err := authorize(req, contentType)
+	if err != nil || resp.StatusCode != 201 {
+		log.Printf("%v Failed to create user: %v", resp.StatusCode, err)
+		return common.UserDetails{}
 	}
 
-	body, err := io.ReadAll(r.Body)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 		return common.UserDetails{}
 	}
 
 	var ur userResponse
-
 	err = json.Unmarshal(body, &ur)
 	if err != nil {
 		log.Printf("Failed to convert from json: %v",err)
@@ -56,8 +58,5 @@ func CreateUser(groupId int, displayName string) common.UserDetails {
 	}
 
 	createdUser := common.CreateUser(ur.UserId, groupId, displayName)
-
-	defer r.Body.Close()
-
 	return createdUser
 }
