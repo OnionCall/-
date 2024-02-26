@@ -30,21 +30,31 @@ func MessagesService() {
 	ticker := time.Tick(5 * time.Second) // target is twice a second for production
 
 	for range ticker {
-		url := fmt.Sprintf("%v/messages/?messageid=%v&groupid=%v", common.Env, common.LatestMessageId, common.Group.GroupId)
-		r, err := http.Get(url)
+		url := fmt.Sprintf("%v/admin/messages/?messageid=%v&groupid=%v", common.Env, common.LatestMessageId, common.Group.GroupId)
+
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			log.Printf("Failed to get messages from api: %v",err) 
+			log.Printf("Failed to create message request: %v",err) 
 		}
-		defer r.Body.Close()
+		
+		resp, err := authorize(req, "")
+		if err != nil || resp.StatusCode != 200 {
+			log.Printf("%v Failed to get messages from api: %v", resp.StatusCode, err)
+		}
 
-		var messages []common.DisplayMessage
-
-		body, err := io.ReadAll(r.Body)
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			log.Printf("Failed to get messages from api: %v",resp.Status)
+			return
+		}
+		
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-
+		
+		var messages []common.DisplayMessage
 		err = json.Unmarshal(body, &messages)
 		if err != nil {
 			log.Printf("Failed to convert from json: %v",err)
@@ -71,7 +81,7 @@ func SendMessage(messageContents string) {
 		MessageContents: messageContents,
 	}
 
-	url := fmt.Sprintf("%v/messages/", common.Env)
+	url := fmt.Sprintf("%v/admin/messages/", common.Env)
 	contentType := "application/json"
 
 	jsonData, err := json.Marshal(group)
@@ -79,14 +89,22 @@ func SendMessage(messageContents string) {
 		fmt.Println(err)
 		return 
 	}
-	r, err := http.Post(url, contentType, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Printf("Failed to send message: %v",err)
+		log.Printf("Failed to create message request: %v",err)
+		return
 	}
 
+	resp, err := authorize(req, contentType)
+	if err != nil || resp.StatusCode != 201 {
+		log.Printf("%v Failed to send message: %v", resp.StatusCode, err)
+		return
+	}
+
+	defer resp.Body.Close()
 	var response messageResponse
 
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 	}
@@ -95,6 +113,4 @@ func SendMessage(messageContents string) {
 	if err != nil {
 		log.Println(err)
 	}
-
-	defer r.Body.Close()
 }

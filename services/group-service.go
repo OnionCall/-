@@ -8,10 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	// "net/url"
-
-	// "strings"
-
 	"github.com/google/uuid"
 	"github.com/onioncall/cli-squa/cli/common"
 )
@@ -27,55 +23,62 @@ type groupResponse struct {
 
 func CreateGroup(uuid uuid.UUID, groupKey string) int {
 	group := createRoomDto{GroupUuid: uuid.String(), GroupKey: groupKey}
-	url := fmt.Sprintf("%v/messagegroup/", common.Env)
+	url := fmt.Sprintf("%v/admin/messagegroup/", common.Env)
 	contentType := "application/json"
 
 	jsonData, err := json.Marshal(group)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return 0
 	}
 
-	r, err := http.Post(url, contentType, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return 0
 	}
 
-	defer r.Body.Close()
+	resp, err := authorize(req, contentType)
+	if err != nil || resp.StatusCode != 201 {
+		log.Printf("%v Failed to create group: %v", resp.StatusCode, err)
+		return 0
+	}
 
-	var response groupResponse
-
-	body, err := io.ReadAll(r.Body)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 	}
-
+	
+	var response groupResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Println(err)
 	}
 
 	common.CreateGroup(response.GroupId, uuid, groupKey)
-
 	return response.GroupId
 }
 
 func GetGroupByLogin(uuid uuid.UUID, groupKey string) int {
-	url := fmt.Sprintf("%v/messagegroup/?groupuuid=%v&groupkey=%v", common.Env, uuid.String(), groupKey)
-	r, err := http.Get(url)
+	url := fmt.Sprintf("%v/admin/messagegroup/?groupuuid=%v&groupkey=%v", common.Env, uuid.String(), groupKey)
+    req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)
 	}
-	defer r.Body.Close()
 
+	resp, err := authorize(req, "")
+	if err != nil || resp.StatusCode != 200 {
+		log.Printf("%v Failed to get group: %v", resp.StatusCode, err)
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+	}
+	
 	var group groupResponse
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
 	err = json.Unmarshal(body, &group)
 	if err != nil {
 		log.Println(err)
