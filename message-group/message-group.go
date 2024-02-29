@@ -14,15 +14,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
-	"github.com/onioncall/cli-squa/cli/services"
-
-	// "github.com/onioncall/cli-squa/cli/common"
+	"github.com/onioncall/squa/services"
+	"github.com/onioncall/squa/entities"
 	"golang.org/x/term"
 )
 
 func Execute(groupUuid uuid.UUID) {
 	services.Clear()
-	go services.MessagesService()
+	go entities.MessagesService()
 	p := tea.NewProgram(initialModel(groupUuid))
 
 	if _, err := p.Run(); err != nil {
@@ -83,19 +82,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
-			u := services.User
+			u := entities.User
 			u.DeactivateUser();
 			log.Fatal("Goodbye!")
 			return m, tea.Quit
 
 		case tea.KeyEnter:
-			message := services.DisplayMessage{
-				DisplayName:     services.User.DisplayName,
+			message := entities.DisplayMessage{
+				DisplayName:     entities.User.DisplayName,
 				MessageContents: m.textarea.Value(),
 			}
 			
 			message.SendMessage()
-			m.messages = append(m.messages, m.senderStyle.Render(services.User.DisplayName+": ")+m.textarea.Value())
+			m.messages = append(m.messages, m.senderStyle.Render(entities.User.DisplayName+": ")+m.textarea.Value())
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
@@ -107,13 +106,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	if len(services.UnrecievedMessages) > 0 {
-		for _, message := range services.UnrecievedMessages {
+	if len(entities.UnrecievedMessages) > 0 {
+		for _, message := range entities.UnrecievedMessages {
 			m.messages = append(m.messages, m.recieverStyle.Render(message.DisplayName+": ")+message.MessageContents)
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 			m.viewport.GotoBottom()
 		}
-		services.UnrecievedMessages = []services.DisplayMessage{}
+		entities.UnrecievedMessages = []entities.DisplayMessage{}
 	}
 
 	return m, tea.Batch(tiCmd, vpCmd)

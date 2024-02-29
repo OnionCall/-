@@ -11,10 +11,12 @@ import (
 
 	// "github.com/charmbracelet/bubbles/cursor"
 	"github.com/charmbracelet/bubbles/textinput"
-	messagegroup "github.com/onioncall/cli-squa/cli/message-group"
+	messagegroup "github.com/onioncall/squa/message-group"
 
-	//"github.com/onioncall/cli-squa/cli/messagegroup"
-	"github.com/onioncall/cli-squa/cli/services"
+	//"github.com/onioncall/squa/messagegroup"
+	"github.com/onioncall/squa/services"
+	"github.com/onioncall/squa/entities"
+
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -81,7 +83,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	u := services.UserDetails{}
+	u := entities.UserDetails{}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -110,7 +112,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				groupUuid := services.GenerateUuid()
-				g := services.MessageGroup {
+				g := entities.MessageGroup {
 					GroupUuid: groupUuid,
 					GroupKey: m.inputs[1].Value(),
 				}

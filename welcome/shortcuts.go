@@ -1,8 +1,8 @@
 package welcome
 
 import (
-	"github.com/onioncall/cli-squa/cli/create"
-	"github.com/onioncall/cli-squa/cli/join"
+	"github.com/onioncall/squa/create"
+	"github.com/onioncall/squa/join"
 )
 
 func RouteShortcut(input string) {

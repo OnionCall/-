@@ -1,4 +1,4 @@
-package services
+package entities
 
 import (
 	"bytes"
@@ -8,7 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/onioncall/cli-squa/cli/common"
+	"github.com/onioncall/squa/common"
+	"github.com/onioncall/squa/services"
 )
 
 type createUserDto struct {
@@ -53,7 +54,7 @@ func(u UserDetails) CreateUser() UserDetails {
 		log.Println(err)
 	}
 
-	resp, err := authorize(req, contentType)
+	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to create user: %v", resp.StatusCode, err)
 		return UserDetails{}
@@ -93,7 +94,7 @@ func (u UserDetails) DeactivateUser() {
 		log.Println(err)
 	}
 
-	resp, err := authorize(req, contentType)
+	resp, err := services.Authorize(req, contentType)
 	if err != nil {
 		log.Printf("%v Failed to deactivate user: %v", resp.StatusCode, err)
 	} else if resp.StatusCode == 200 {

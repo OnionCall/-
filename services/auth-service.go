@@ -2,7 +2,7 @@ package services
 
 import "net/http"
 
-func authorize(req *http.Request, contentType string) (*http.Response, error) {
+func Authorize(req *http.Request, contentType string) (*http.Response, error) {
 	client := &http.Client{}
 	req.SetBasicAuth("admin", "hopefullywedontneedthispasswordlongterm")
 

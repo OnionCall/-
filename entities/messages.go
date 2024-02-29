@@ -1,4 +1,4 @@
-package services
+package entities
 
 import (
 	"bytes"
@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/onioncall/cli-squa/cli/common"
+	"github.com/onioncall/squa/common"	
+	"github.com/onioncall/squa/services"
 )
 
 type LoginResponse struct {
@@ -57,7 +58,7 @@ func MessagesService() {
 			log.Printf("Failed to create message request: %v",err) 
 		}
 		
-		resp, err := authorize(req, "")
+		resp, err := services.Authorize(req, "")
 		if err != nil || resp.StatusCode != 200 {
 			log.Printf("%v Failed to get messages from api: %v", resp.StatusCode, err)
 		}
@@ -115,7 +116,7 @@ func (m DisplayMessage) SendMessage() {
 		return
 	}
 
-	resp, err := authorize(req, contentType)
+	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to send message: %v", resp.StatusCode, err)
 		return

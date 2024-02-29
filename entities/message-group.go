@@ -1,4 +1,4 @@
-package services
+package entities
 
 import (
 	"bytes"
@@ -9,7 +9,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/onioncall/cli-squa/cli/common"
+	"github.com/onioncall/squa/common"
+	"github.com/onioncall/squa/services"
 )
 
 type createRoomDto struct {
@@ -39,10 +40,6 @@ func(g MessageGroup) setGroup () MessageGroup {
 	return Group
 }
 
-type GroupService interface {
-
-}
-
 func(g MessageGroup) CreateGroup() int {
 	group := createRoomDto{GroupUuid: g.GroupUuid.String(), GroupKey: g.GroupKey}
 	url := fmt.Sprintf("%v/admin/messagegroup/", common.Env)
@@ -60,7 +57,7 @@ func(g MessageGroup) CreateGroup() int {
 		return 0
 	}
 
-	resp, err := authorize(req, contentType)
+	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to create group: %v", resp.StatusCode, err)
 		return 0
@@ -91,7 +88,7 @@ func (g MessageGroup) GetGroupByLogin() int {
 		log.Println(err)
 	}
 
-	resp, err := authorize(req, "")
+	resp, err := services.Authorize(req, "")
 	if err != nil || resp.StatusCode != 200 {
 		log.Printf("%v Failed to get group: %v", resp.StatusCode, err)
 	}
