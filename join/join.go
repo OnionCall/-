@@ -12,10 +12,10 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/google/uuid"
 
-	//"github.com/onioncall/cli-squa/cli/chatroom"
-	"github.com/onioncall/cli-squa/cli/common"
-	messagegroup "github.com/onioncall/cli-squa/cli/message-group"
-	"github.com/onioncall/cli-squa/cli/services"
+	//"github.com/onioncall-squa/chatroom"
+	messagegroup "github.com/onioncall/squa/message-group"
+	"github.com/onioncall/squa/services"
+	"github.com/onioncall/squa/entities"
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -80,7 +80,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	user := common.UserDetails{}
+	u := entities.UserDetails{}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -101,14 +101,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Did the user press enter while the submit button was focused?
 			// If so, exit.
 			if s == "enter" && m.focusIndex == len(m.inputs) {
-				user.DisplayName = m.inputs[0].Value()
+				u.DisplayName = m.inputs[0].Value()
 
 				if len(strings.TrimSpace(m.inputs[0].Value())) == 0 {
-					user.DisplayName = services.GenerateDefaultName()
+					u.DisplayName = services.GenerateDefaultName()
 				}
 
-				services.GetGroupByLogin(groupUuid, m.inputs[2].Value())
-				services.CreateUser(common.Group.GroupId, user.DisplayName)
+				g := entities.MessageGroup {
+					GroupUuid: groupUuid,
+					GroupKey: m.inputs[2].Value(),
+				}
+
+				groupId := g.GetGroupByLogin()
+				u.GroupId = groupId
+
+				u.CreateUser()
 				services.Clear()
 				messagegroup.Execute(groupUuid)
 

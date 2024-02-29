@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/onioncall/cli-squa/cli/common"
-	"github.com/onioncall/cli-squa/cli/services"
-	"github.com/onioncall/cli-squa/cli/welcome"
+	"github.com/onioncall/squa/common"
+	"github.com/onioncall/squa/services"
+	"github.com/onioncall/squa/welcome"
 )
 
 func main() {
@@ -11,6 +11,6 @@ func main() {
 	env := common.GetEnvironment()
 	common.SetEnvironment(env.Production)
 
-	common.LatestMessageId = 0
+	// services.LatestMessageId = 0
 	welcome.Execute()
 }

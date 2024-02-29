@@ -11,8 +11,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/onioncall/cli-squa/cli/create"
-	"github.com/onioncall/cli-squa/cli/join"
+	"github.com/onioncall/squa/create"
+	"github.com/onioncall/squa/join"
 )
 
 var (
@@ -53,12 +53,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter:
-			if lcInput == "create" || lcInput == "c" || lcInput == ".sq/create"{
+
+			if lcInput == "create" {
 				create.Execute()
-			}
-			if lcInput == "join" || lcInput == "j" || lcInput == ".sq/join" {
+			} else if lcInput == "join" {
 				join.Execute()
+			} else {
+				RouteShortcut(lcInput)
 			}
+
 			return m, tea.Quit
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit

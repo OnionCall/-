@@ -1,4 +1,4 @@
-module github.com/onioncall/cli-squa/cli
+module github.com/onioncall/squa
 
 go 1.21.6
 

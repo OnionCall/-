@@ -1,4 +1,4 @@
-package services
+package entities
 
 import (
 	"bytes"
@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/onioncall/cli-squa/cli/common"
+	"github.com/onioncall/squa/common"	
+	"github.com/onioncall/squa/services"
 )
 
 type LoginResponse struct {
@@ -26,18 +27,38 @@ type messageResponse struct {
 	MessageId int `json:"messageid"`
 }
 
+type DisplayMessage struct {
+	MessageId int `json:"messageid"`
+	DisplayName string 	`json:"displayname"`
+	MessageContents string `json:"messagecontents"`
+}
+
+var latestMessageId int
+
+func setLatestMessageId(messageId int) int {
+	latestMessageId = messageId
+	return latestMessageId
+}
+
+var UnrecievedMessages []DisplayMessage
+
+func setMessages(m DisplayMessage) []DisplayMessage {
+	UnrecievedMessages = append(UnrecievedMessages, m)
+	return UnrecievedMessages
+}
+
 func MessagesService() {
 	ticker := time.Tick(5 * time.Second) // target is twice a second for production
 
 	for range ticker {
-		url := fmt.Sprintf("%v/admin/messages/?messageid=%v&groupid=%v", common.Env, common.LatestMessageId, common.Group.GroupId)
+		url := fmt.Sprintf("%v/admin/messages/?messageid=%v&groupid=%v", common.Env, latestMessageId, Group.GroupId)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			log.Printf("Failed to create message request: %v",err) 
 		}
 		
-		resp, err := authorize(req, "")
+		resp, err := services.Authorize(req, "")
 		if err != nil || resp.StatusCode != 200 {
 			log.Printf("%v Failed to get messages from api: %v", resp.StatusCode, err)
 		}
@@ -54,7 +75,7 @@ func MessagesService() {
 			return
 		}
 		
-		var messages []common.DisplayMessage
+		var messages []DisplayMessage
 		err = json.Unmarshal(body, &messages)
 		if err != nil {
 			log.Printf("Failed to convert from json: %v",err)
@@ -62,23 +83,23 @@ func MessagesService() {
 		}
 		
 		if len(messages) > 0 {
-			common.SetLatestMessageId(messages[len(messages)-1].MessageId)
+			setLatestMessageId(messages[len(messages)-1].MessageId)
 			
 			//We only want to render messages not sent from user to the terminal, since we already have those message in the terminal
 			for _, message := range messages {
-				if message.DisplayName != common.User.DisplayName {
-					common.AddMessages(message)
+				if message.DisplayName != User.DisplayName {
+					setMessages(message)
 				}
 			}
 		}
 	}
 } 
 
-func SendMessage(messageContents string) {
+func (m DisplayMessage) SendMessage() {
 	group := sendMessageDto {
-		UserId: common.User.UserId,
-		GroupId: common.User.GroupId,
-		MessageContents: messageContents,
+		UserId: User.UserId,
+		GroupId: User.GroupId,
+		MessageContents: m.MessageContents,
 	}
 
 	url := fmt.Sprintf("%v/admin/messages/", common.Env)
@@ -95,7 +116,7 @@ func SendMessage(messageContents string) {
 		return
 	}
 
-	resp, err := authorize(req, contentType)
+	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to send message: %v", resp.StatusCode, err)
 		return
