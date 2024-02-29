@@ -11,6 +11,6 @@ func main() {
 	env := common.GetEnvironment()
 	common.SetEnvironment(env.Production)
 
-	common.LatestMessageId = 0
+	// services.LatestMessageId = 0
 	welcome.Execute()
 }

@@ -21,8 +21,30 @@ type groupResponse struct {
 	GroupId int `json:"groupid"`
 }
 
-func CreateGroup(uuid uuid.UUID, groupKey string) int {
-	group := createRoomDto{GroupUuid: uuid.String(), GroupKey: groupKey}
+type MessageGroup struct {
+	GroupId   int       `json:"groupid"`
+	GroupUuid uuid.UUID `json:"groupuuid"`
+	GroupKey string `json:"groupkey"`
+}
+
+var Group MessageGroup
+
+func(g MessageGroup) setGroup () MessageGroup {
+	Group = MessageGroup {
+		GroupId: g.GroupId, 
+		GroupUuid: g.GroupUuid, 
+		GroupKey: g.GroupKey,
+	}
+
+	return Group
+}
+
+type GroupService interface {
+
+}
+
+func(g MessageGroup) CreateGroup() int {
+	group := createRoomDto{GroupUuid: g.GroupUuid.String(), GroupKey: g.GroupKey}
 	url := fmt.Sprintf("%v/admin/messagegroup/", common.Env)
 	contentType := "application/json"
 
@@ -34,7 +56,7 @@ func CreateGroup(uuid uuid.UUID, groupKey string) int {
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println(err)
+		log.Printf("Failed to create group request: %v", err)
 		return 0
 	}
 
@@ -49,20 +71,22 @@ func CreateGroup(uuid uuid.UUID, groupKey string) int {
 	if err != nil {
 		log.Println(err)
 	}
-	
+
 	var response groupResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Println(err)
 	}
 
-	common.CreateGroup(response.GroupId, uuid, groupKey)
-	return response.GroupId
+	g.GroupId = response.GroupId
+	g.setGroup()
+
+	return g.GroupId
 }
 
-func GetGroupByLogin(uuid uuid.UUID, groupKey string) int {
-	url := fmt.Sprintf("%v/admin/messagegroup/?groupuuid=%v&groupkey=%v", common.Env, uuid.String(), groupKey)
-    req, err := http.NewRequest("GET", url, nil)
+func (g MessageGroup) GetGroupByLogin() int {
+	url := fmt.Sprintf("%v/admin/messagegroup/?groupuuid=%v&groupkey=%v", common.Env, g.GroupUuid.String(), g.GroupKey)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)
 	}
@@ -77,13 +101,15 @@ func GetGroupByLogin(uuid uuid.UUID, groupKey string) int {
 	if err != nil {
 		log.Println(err)
 	}
-	
+
 	var group groupResponse
 	err = json.Unmarshal(body, &group)
 	if err != nil {
 		log.Println(err)
 	}
 
-	common.CreateGroup(group.GroupId, uuid, groupKey)
+	g.GroupId = group.GroupId
+	g.setGroup()
+
 	return group.GroupId
 }

@@ -14,7 +14,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
-	"github.com/onioncall/cli-squa/cli/common"
 	"github.com/onioncall/cli-squa/cli/services"
 
 	// "github.com/onioncall/cli-squa/cli/common"
@@ -58,12 +57,12 @@ func initialModel(groupUuid uuid.UUID) model {
 	ta.KeyMap.InsertNewline.SetEnabled(false)
 
 	return model{
-		textarea:    ta,
-		messages:    []string{},
-		viewport:    vp,
-		senderStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("29")) , //lets do 5 for other chats
+		textarea:      ta,
+		messages:      []string{},
+		viewport:      vp,
+		senderStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("29")), //lets do 5 for other chats
 		recieverStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("3")),
-		err:         nil,
+		err:           nil,
 	}
 }
 
@@ -84,12 +83,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
-			// fmt.Println(m.textarea.Value())
+			u := services.User
+			u.DeactivateUser();
 			log.Fatal("Goodbye!")
 			return m, tea.Quit
+
 		case tea.KeyEnter:
-			services.SendMessage(m.textarea.Value())
-			m.messages = append(m.messages, m.senderStyle.Render(common.User.DisplayName+": ")+m.textarea.Value())
+			message := services.DisplayMessage{
+				DisplayName:     services.User.DisplayName,
+				MessageContents: m.textarea.Value(),
+			}
+			
+			message.SendMessage()
+			m.messages = append(m.messages, m.senderStyle.Render(services.User.DisplayName+": ")+m.textarea.Value())
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
@@ -101,14 +107,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-		if (len(common.UnrecievedMessages) > 0) {
-		for _, message := range common.UnrecievedMessages {
+	if len(services.UnrecievedMessages) > 0 {
+		for _, message := range services.UnrecievedMessages {
 			m.messages = append(m.messages, m.recieverStyle.Render(message.DisplayName+": ")+message.MessageContents)
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 			m.viewport.GotoBottom()
 		}
-		common.UnrecievedMessages = []common.DisplayMessage{}
-	}	
+		services.UnrecievedMessages = []services.DisplayMessage{}
+	}
 
 	return m, tea.Batch(tiCmd, vpCmd)
 }
