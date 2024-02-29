@@ -40,7 +40,7 @@ func(u UserDetails) setUser() UserDetails {
 
 func(u UserDetails) CreateUser() UserDetails {
 	user := createUserDto{GroupId: u.GroupId, DisplayName: u.DisplayName}
-	url := fmt.Sprintf("%v/admin/userdetails/", common.Env)
+	url := fmt.Sprintf("%v/admin/userdetails/", common.Environment)
 	contentType := "application/json"
 	
 	jsonData, err := json.Marshal(user)
@@ -81,7 +81,7 @@ func(u UserDetails) CreateUser() UserDetails {
 }
 
 func (u UserDetails) DeactivateUser() {
-	url := fmt.Sprintf("%v/admin/userdetails/", common.Env)
+	url := fmt.Sprintf("%v/admin/userdetails/", common.Environment)
 	contentType := "application/json"
 	
 	jsonData, err := json.Marshal(u)
@@ -101,5 +101,7 @@ func (u UserDetails) DeactivateUser() {
 		//User Deactivated
 	} else if resp.StatusCode == 204 {
 		//Group Deleted
+	} else {
+		log.Print("I don't know how you got here, or what it means. But you're here. And it means something. I just don't know what.")
 	}
 }

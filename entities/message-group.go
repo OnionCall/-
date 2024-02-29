@@ -42,7 +42,7 @@ func(g MessageGroup) setGroup () MessageGroup {
 
 func(g MessageGroup) CreateGroup() int {
 	group := createRoomDto{GroupUuid: g.GroupUuid.String(), GroupKey: g.GroupKey}
-	url := fmt.Sprintf("%v/admin/messagegroup/", common.Env)
+	url := fmt.Sprintf("%v/admin/messagegroup/", common.Environment)
 	contentType := "application/json"
 
 	jsonData, err := json.Marshal(group)
@@ -82,7 +82,7 @@ func(g MessageGroup) CreateGroup() int {
 }
 
 func (g MessageGroup) GetGroupByLogin() int {
-	url := fmt.Sprintf("%v/admin/messagegroup/?groupuuid=%v&groupkey=%v", common.Env, g.GroupUuid.String(), g.GroupKey)
+	url := fmt.Sprintf("%v/admin/messagegroup/?groupuuid=%v&groupkey=%v", common.Environment, g.GroupUuid.String(), g.GroupKey)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Println(err)

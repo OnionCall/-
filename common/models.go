@@ -58,25 +58,11 @@ package common
 // 	return UnrecievedMessages
 // }
 
-var Env string
+var Environment string
 
-type Environment struct {
-	Develop string
-	Production string
-}
-
-func GetEnvironment() Environment {
-	environment := Environment {
-		Develop: "http://localhost:8040",
-		Production: "https://clisqua.com",
-	}
-
-	return environment
-}
-
-func SetEnvironment(env string) string {
-	Env = env
-	return Env
+func SetEnvironment(e string) string {
+	Environment = e
+	return Environment
 }
 
 // // func (u *UnrecievedMessages) AddMessages(msg DisplayMessage) {
