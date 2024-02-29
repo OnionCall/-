@@ -51,7 +51,7 @@ func MessagesService() {
 	ticker := time.Tick(5 * time.Second) // target is twice a second for production
 
 	for range ticker {
-		url := fmt.Sprintf("%v/admin/messages/?messageid=%v&groupid=%v", common.Env, latestMessageId, Group.GroupId)
+		url := fmt.Sprintf("%v/admin/messages/?messageid=%v&groupid=%v", common.Environment, latestMessageId, Group.GroupId)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
@@ -102,7 +102,7 @@ func (m DisplayMessage) SendMessage() {
 		MessageContents: m.MessageContents,
 	}
 
-	url := fmt.Sprintf("%v/admin/messages/", common.Env)
+	url := fmt.Sprintf("%v/admin/messages/", common.Environment)
 	contentType := "application/json"
 
 	jsonData, err := json.Marshal(group)
