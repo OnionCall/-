@@ -1,8 +1,5 @@
 package welcome
 
-// A simple program demonstrating the text input component from the Bubbles
-// component library.
-
 import (
 	"fmt"
 	"log"
@@ -16,7 +13,7 @@ import (
 )
 
 var (
-	style       = lipgloss.NewStyle().Foreground(lipgloss.Color("29"))
+	style       = lipgloss.NewStyle().Foreground(lipgloss.Color("62"))
 	cursorStyle = style.Copy()
 )
 
@@ -54,12 +51,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEnter:
 
-			if lcInput == "create" {
+			if lcInput == "create" || lcInput == "c" {
 				create.Execute()
-			} else if lcInput == "join" {
+			} else if lcInput == "join" || lcInput == "j" {
 				join.Execute()
 			} else {
-				RouteShortcut(lcInput)
+				//back to welcome screen
+				Execute()
 			}
 
 			return m, tea.Quit

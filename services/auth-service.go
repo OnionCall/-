@@ -1,11 +1,16 @@
 package services
 
-import "net/http"
+import (
+	"net/http"
+	"os"
+)
 
 func Authorize(req *http.Request, contentType string) (*http.Response, error) {
 	client := &http.Client{}
-	req.SetBasicAuth("admin", "hopefullywedontneedthispasswordlongterm")
-
+	if os.Getenv("ENV") != "Development" {
+		req.SetBasicAuth("admin", "hopefullywedontneedthispasswordlongterm")	
+	}
+	
 	if req.Method == "POST" || req.Method =="DELETE" {
 		req.Header.Set("Content-Type", contentType)	
 	}

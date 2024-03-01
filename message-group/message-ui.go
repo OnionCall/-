@@ -1,8 +1,5 @@
 package messagegroup
 
-// A simple program demonstrating the text area component from the Bubbles
-// component library.
-
 import (
 	"fmt"
 	"log"
@@ -14,8 +11,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
-	"github.com/onioncall/squa/services"
+	"github.com/onioncall/squa/common"
 	"github.com/onioncall/squa/entities"
+	"github.com/onioncall/squa/services"
 	"golang.org/x/term"
 )
 
@@ -30,24 +28,25 @@ func Execute(groupUuid uuid.UUID) {
 }
 
 func initialModel(groupUuid uuid.UUID) model {
+	tw, th, _ := term.GetSize(int(os.Stdout.Fd()))
+
 	ta := textarea.New()
 	ta.Placeholder = "Send a message..."
 	ta.Focus()
-
 	ta.Prompt = "┃ "
 	ta.CharLimit = 280
-
-	ta.SetWidth(70)
+	ta.SetWidth(tw-2)
 	ta.SetHeight(5)
-
-	// Remove cursor line styling
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
-
 	ta.ShowLineNumbers = false
 
-	_, tHeight, _ := term.GetSize(int(os.Stdout.Fd()))
-
-	vp := viewport.New(70, tHeight-8)
+	vp := viewport.New(tw-2, th-9)
+	vp.Style = lipgloss.NewStyle().
+	BorderStyle(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("62")).
+	PaddingRight(2).
+	PaddingTop(1).
+	PaddingLeft(2)
 
 	welcomeMessage := fmt.Sprintf("Welcome to message group %s!\nType a message and press Enter to send.", groupUuid.String())
 
@@ -59,8 +58,9 @@ func initialModel(groupUuid uuid.UUID) model {
 		textarea:      ta,
 		messages:      []string{},
 		viewport:      vp,
-		senderStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("29")), //lets do 5 for other chats
-		recieverStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("3")),
+		senderStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("62")), //lets do 5 for other chats
+		recieverStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("205")),
+		errorStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("3")),
 		err:           nil,
 	}
 }
@@ -112,7 +112,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 			m.viewport.GotoBottom()
 		}
+
 		entities.UnrecievedMessages = []entities.DisplayMessage{}
+	}
+
+	if len(common.Errorlist) > 0 {
+		for _, err := range common.Errorlist {
+			m.messages = append(m.messages, m.errorStyle.Render("Error: ")+err.Error())
+			m.viewport.SetContent(strings.Join(m.messages, "\n"))
+			m.viewport.GotoBottom()
+		}
+
+		common.Errorlist = []error{}
 	}
 
 	return m, tea.Batch(tiCmd, vpCmd)
@@ -120,8 +131,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	return fmt.Sprintf(
-		"%s\n\n%s",
+		"%s\n\n%s\n%s",
 		m.viewport.View(),
 		m.textarea.View(),
-	) + "\n\n"
+		helpStyle(entities.Group.GroupUuid.String()),
+	)
 }
