@@ -65,6 +65,13 @@ func SetEnvironment(e string) string {
 	return Environment
 }
 
+var Errorlist []error
+
+func AddError(err error) []error {
+	Errorlist = append(Errorlist, err)
+	return Errorlist
+}
+
 // // func (u *UnrecievedMessages) AddMessages(msg DisplayMessage) {
 // // 	*u = append(*u, msg)
 // // }

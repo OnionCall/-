@@ -9,10 +9,14 @@ import (
 type errMsg error
 
 type model struct {
-	viewport    viewport.Model
-	messages    []string
-	textarea    textarea.Model
-	senderStyle lipgloss.Style
+	viewport      viewport.Model
+	messages      []string
+	textarea      textarea.Model
+	senderStyle   lipgloss.Style
 	recieverStyle lipgloss.Style
-	err         error
+	errorStyle    lipgloss.Style
+	err           error
 }
+
+var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Render
+

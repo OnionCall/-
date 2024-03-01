@@ -56,22 +56,26 @@ func MessagesService() {
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			log.Printf("Failed to create message request: %v",err) 
+			common.AddError(err)
 		}
 		
 		resp, err := services.Authorize(req, "")
 		if err != nil || resp.StatusCode != 200 {
 			log.Printf("%v Failed to get messages from api: %v", resp.StatusCode, err)
+			common.AddError(err)
 		}
 
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
 			log.Printf("Failed to get messages from api: %v",resp.Status)
+			common.AddError(err)
 			return
 		}
 		
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Println(err)
+			common.AddError(err)
 			return
 		}
 		
@@ -79,6 +83,7 @@ func MessagesService() {
 		err = json.Unmarshal(body, &messages)
 		if err != nil {
 			log.Printf("Failed to convert from json: %v",err)
+			common.AddError(err)
 			return
 		}
 		
@@ -107,18 +112,20 @@ func (m DisplayMessage) SendMessage() {
 
 	jsonData, err := json.Marshal(group)
 	if err != nil {
-		fmt.Println(err)
+		common.AddError(err)
 		return 
 	}
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Printf("Failed to create message request: %v",err)
+		common.AddError(err)
 		return
 	}
 
 	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to send message: %v", resp.StatusCode, err)
+		common.AddError(err)
 		return
 	}
 
@@ -127,11 +134,11 @@ func (m DisplayMessage) SendMessage() {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 	}
 
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 	}
 }

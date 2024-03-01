@@ -45,25 +45,26 @@ func(u UserDetails) CreateUser() UserDetails {
 	
 	jsonData, err := json.Marshal(user)
 	if err != nil {
-		fmt.Println(err)
+		common.AddError(err)
 		return UserDetails{}
 	}
 	
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 	}
 
 	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {
 		log.Printf("%v Failed to create user: %v", resp.StatusCode, err)
+		common.AddError(err)
 		return UserDetails{}
 	}
 
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 		return UserDetails{}
 	}
 
@@ -71,6 +72,7 @@ func(u UserDetails) CreateUser() UserDetails {
 	err = json.Unmarshal(body, &ur)
 	if err != nil {
 		log.Printf("Failed to convert from json: %v",err)
+		common.AddError(err)
 		return UserDetails{}
 	}
 
@@ -86,17 +88,18 @@ func (u UserDetails) DeactivateUser() {
 	
 	jsonData, err := json.Marshal(u)
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 	}
 	
 	req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Println(err)
+		common.AddError(err)
 	}
 
 	resp, err := services.Authorize(req, contentType)
 	if err != nil {
 		log.Printf("%v Failed to deactivate user: %v", resp.StatusCode, err)
+		common.AddError(err)
 	} else if resp.StatusCode == 200 {
 		//User Deactivated
 	} else if resp.StatusCode == 204 {
