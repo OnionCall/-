@@ -13,9 +13,9 @@ import (
 	"github.com/google/uuid"
 
 	//"github.com/onioncall-squa/chatroom"
+	"github.com/onioncall/squa/entities"
 	messagegroup "github.com/onioncall/squa/message-group"
 	"github.com/onioncall/squa/services"
-	"github.com/onioncall/squa/entities"
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,13 +23,13 @@ import (
 )
 
 var (
-	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("62"))
+	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff8c00"))
 	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
 	cursorStyle  = focusedStyle.Copy()
 	noStyle      = lipgloss.NewStyle()
 
-	focusedButton = focusedStyle.Copy().Render("[ Enter ]")
-	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Enter"))
+	focusedButton = focusedStyle.Copy().Render("[ JOIN ]")
+	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("JOIN"))
 
 	ValidId = true
 )
@@ -107,9 +107,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					u.DisplayName = services.GenerateDefaultName()
 				}
 
-				g := entities.MessageGroup {
+				g := entities.MessageGroup{
 					GroupUuid: groupUuid,
-					GroupKey: m.inputs[2].Value(),
+					GroupKey:  m.inputs[2].Value(),
 				}
 
 				groupId := g.GetGroupByLogin()

@@ -14,9 +14,8 @@ import (
 	messagegroup "github.com/onioncall/squa/message-group"
 
 	//"github.com/onioncall/squa/messagegroup"
-	"github.com/onioncall/squa/services"
 	"github.com/onioncall/squa/entities"
-
+	"github.com/onioncall/squa/services"
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -29,10 +28,10 @@ var (
 	cursorStyle  = focusedStyle.Copy()
 	noStyle      = lipgloss.NewStyle()
 
-	focusedButton = focusedStyle.Copy().Render("[ Enter ]")
-	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Enter"))
+	focusedButton = focusedStyle.Copy().Render("[ CREATE ]")
+	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("CREATE"))
 
-	passwordsMatch = true;
+	passwordsMatch = true
 )
 
 func Execute() {
@@ -104,24 +103,24 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			// Did the user press enter while the submit button was focused?
 			// If so, exit.
-			if s == "enter" && m.focusIndex == len(m.inputs) && passwordsMatch{
+			if s == "enter" && m.focusIndex == len(m.inputs) && passwordsMatch {
 				u.DisplayName = m.inputs[0].Value()
 
-				if (len(strings.TrimSpace(m.inputs[0].Value())) == 0) {
+				if len(strings.TrimSpace(m.inputs[0].Value())) == 0 {
 					u.DisplayName = services.GenerateDefaultName()
 				}
 
 				groupUuid := services.GenerateUuid()
-				g := entities.MessageGroup {
+				g := entities.MessageGroup{
 					GroupUuid: groupUuid,
-					GroupKey: m.inputs[1].Value(),
+					GroupKey:  m.inputs[1].Value(),
 				}
 
 				groupId := g.CreateGroup()
 
 				u.GroupId = groupId
 				u.CreateUser()
-				
+
 				services.Clear()
 				messagegroup.Execute(groupUuid)
 
@@ -182,7 +181,7 @@ func (m model) View() string {
 	var b strings.Builder
 
 	b.WriteString("Enter a display name, then enter and confirm password. \nIf no password is required, leave them blank\n\n")
-	if (!passwordsMatch) {
+	if !passwordsMatch {
 		b.WriteString("Passwords do not match\n")
 	}
 
