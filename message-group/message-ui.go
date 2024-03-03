@@ -34,19 +34,19 @@ func initialModel(groupUuid uuid.UUID) model {
 	ta.Placeholder = "Send a message..."
 	ta.Focus()
 	ta.Prompt = "┃ "
-	ta.CharLimit = 280
-	ta.SetWidth(tw-2)
+	ta.CharLimit = 300
+	ta.SetWidth(tw - 2)
 	ta.SetHeight(5)
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 	ta.ShowLineNumbers = false
 
 	vp := viewport.New(tw-2, th-9)
 	vp.Style = lipgloss.NewStyle().
-	BorderStyle(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color("62")).
-	PaddingRight(2).
-	PaddingTop(1).
-	PaddingLeft(2)
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#ff8c00")).
+		PaddingRight(2).
+		PaddingTop(1).
+		PaddingLeft(2)
 
 	welcomeMessage := fmt.Sprintf("Welcome to message group %s!\nType a message and press Enter to send.", groupUuid.String())
 
@@ -58,9 +58,9 @@ func initialModel(groupUuid uuid.UUID) model {
 		textarea:      ta,
 		messages:      []string{},
 		viewport:      vp,
-		senderStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("62")), //lets do 5 for other chats
-		recieverStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("205")),
-		errorStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("3")),
+		senderStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("#ff8c00")), //lets do 5 for other chats
+		recieverStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("62")),
+		errorStyle:    lipgloss.NewStyle().Foreground(lipgloss.Color("1")),
 		err:           nil,
 	}
 }
@@ -83,8 +83,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			u := entities.User
-			u.DeactivateUser();
-			log.Fatal("Goodbye!")
+			u.DeactivateUser()
+			// log.Fatal("Goodbye!")
 			return m, tea.Quit
 
 		case tea.KeyEnter:
@@ -92,7 +92,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				DisplayName:     entities.User.DisplayName,
 				MessageContents: m.textarea.Value(),
 			}
-			
+
 			message.SendMessage()
 			m.messages = append(m.messages, m.senderStyle.Render(entities.User.DisplayName+": ")+m.textarea.Value())
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))

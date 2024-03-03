@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	style       = lipgloss.NewStyle().Foreground(lipgloss.Color("62"))
+	style       = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff8c00"))
 	cursorStyle = style.Copy()
 )
 
