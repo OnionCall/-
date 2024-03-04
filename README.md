@@ -16,6 +16,13 @@ To run
 go run .
 ```
 
+to run in dev mode (windows)
+
+```bash
+$env:ENV="Development"
+go run .
+```
+
 to build an executable 
 
 ```bash
