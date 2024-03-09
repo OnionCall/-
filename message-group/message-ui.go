@@ -84,6 +84,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			u := entities.User
 			u.DeactivateUser()
+			services.Clear()
+			os.Exit(0)
 			// log.Fatal("Goodbye!")
 			return m, tea.Quit
 

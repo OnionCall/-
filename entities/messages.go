@@ -18,7 +18,7 @@ type LoginResponse struct {
 }
 
 type sendMessageDto struct {
-	UserId int `json:"userid"`
+	DisplayName string `json:"displayname"`
 	GroupId int `json:"groupid"`
 	MessageContents string `json:"messagecontents"`
 }
@@ -102,7 +102,7 @@ func MessagesService() {
 
 func (m DisplayMessage) SendMessage() {
 	group := sendMessageDto {
-		UserId: User.UserId,
+		DisplayName: User.DisplayName,
 		GroupId: User.GroupId,
 		MessageContents: m.MessageContents,
 	}
@@ -141,4 +141,6 @@ func (m DisplayMessage) SendMessage() {
 	if err != nil {
 		common.AddError(err)
 	}
+
+	setLatestMessageId(response.MessageId)
 }
