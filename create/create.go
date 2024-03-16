@@ -111,7 +111,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				groupUuid := services.GenerateUuid()
-				g := entities.MessageGroup{
+				g := entities.MessageGroup {
 					GroupUuid: groupUuid,
 					GroupKey:  m.inputs[1].Value(),
 				}
