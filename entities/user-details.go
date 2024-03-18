@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	//"io"
 	"log"
 	"net/http"
 
@@ -22,7 +24,7 @@ type userResponse struct {
 }
 
 type UserDetails struct {
-	UserId      int
+	UserId int
 	DisplayName string
 	GroupId  int
 }
@@ -39,7 +41,11 @@ func(u UserDetails) setUser() UserDetails {
 }
 
 func(u UserDetails) CreateUser() UserDetails {
-	user := createUserDto{GroupId: u.GroupId, DisplayName: u.DisplayName}
+	user := createUserDto{
+		GroupId: u.GroupId,
+		DisplayName: u.DisplayName,
+	}
+
 	url := fmt.Sprintf("%v/admin/userdetails/", common.Environment)
 	contentType := "application/json"
 	
@@ -53,6 +59,7 @@ func(u UserDetails) CreateUser() UserDetails {
 	if err != nil {
 		common.AddError(err)
 	}
+
 
 	resp, err := services.Authorize(req, contentType)
 	if err != nil || resp.StatusCode != 201 {

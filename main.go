@@ -17,6 +17,8 @@ func main() {
 	} else {
 		common.SetEnvironment("https://clisqua.com")
 	}
-
+	
+	// set timer for five minutes before quitting to save on azure costs.
+	// remove when we have a more sensible database option
 	welcome.Execute()
 }

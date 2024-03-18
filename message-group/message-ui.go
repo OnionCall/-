@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -20,6 +21,7 @@ import (
 func Execute(groupUuid uuid.UUID) {
 	services.Clear()
 	go entities.MessagesService()
+	go BeginSession()
 	p := tea.NewProgram(initialModel(groupUuid))
 
 	if _, err := p.Run(); err != nil {
@@ -84,6 +86,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			u := entities.User
 			u.DeactivateUser()
+			services.Clear()
+			os.Exit(0)
 			// log.Fatal("Goodbye!")
 			return m, tea.Quit
 
@@ -99,11 +103,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
 		}
-
-	// We handle errors just like any other message
-	case errMsg:
-		m.err = msg
-		return m, nil
 	}
 
 	if len(entities.UnrecievedMessages) > 0 {
@@ -136,4 +135,16 @@ func (m model) View() string {
 		m.textarea.View(),
 		helpStyle(entities.Group.GroupUuid.String()),
 	)
+}
+
+func BeginSession() {
+	sessionDuration := 5 * time.Minute
+	timer := time.NewTimer(sessionDuration)
+	
+	<-timer.C
+	services.Clear()
+
+	entities.User.DeactivateUser()
+	fmt.Println("Session has expired")
+	os.Exit(0)
 }

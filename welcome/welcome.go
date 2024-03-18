@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/onioncall/squa/common"
 	"github.com/onioncall/squa/create"
 	"github.com/onioncall/squa/join"
 )
@@ -76,8 +77,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	environmentText := ""
+	if common.Environment == "http://localhost:8040" {
+		environmentText = "Development Mode\n"
+	}
+	
 	return fmt.Sprintf(
-		"Welcome to squa, a way to send and receive messages from the terminal.\nCreate or Join a message group\n\n%s\n",
+		"%sWelcome to squa, a way to send and receive messages from the terminal.\nCreate or Join a message group\n\n%s\n",
+		environmentText,
 		m.textInput.View(),
 	) + "\n"
 }

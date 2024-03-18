@@ -86,6 +86,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
+			services.Clear()
 			os.Exit(0)
 			return m, tea.Quit
 
