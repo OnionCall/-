@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -20,6 +21,7 @@ import (
 func Execute(groupUuid uuid.UUID) {
 	services.Clear()
 	go entities.MessagesService()
+	go BeginSession()
 	p := tea.NewProgram(initialModel(groupUuid))
 
 	if _, err := p.Run(); err != nil {
@@ -133,4 +135,16 @@ func (m model) View() string {
 		m.textarea.View(),
 		helpStyle(entities.Group.GroupUuid.String()),
 	)
+}
+
+func BeginSession() {
+	sessionDuration := 5 * time.Minute
+	timer := time.NewTimer(sessionDuration)
+	
+	<-timer.C
+	services.Clear()
+
+	entities.User.DeactivateUser()
+	fmt.Println("Session has expired")
+	os.Exit(0)
 }

@@ -20,7 +20,5 @@ func main() {
 	
 	// set timer for five minutes before quitting to save on azure costs.
 	// remove when we have a more sensible database option
-	go services.BeginSession()
-
 	welcome.Execute()
 }
