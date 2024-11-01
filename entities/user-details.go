@@ -10,8 +10,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/onioncall/squa/common"
-	"github.com/onioncall/squa/services"
+	"github.com/OnionCall/squa/common"
+	"github.com/OnionCall/squa/services"
 )
 
 type createUserDto struct {

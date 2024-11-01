@@ -8,9 +8,9 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/onioncall/squa/common"
-	"github.com/onioncall/squa/create"
-	"github.com/onioncall/squa/join"
+	"github.com/OnionCall/squa/common"
+	"github.com/OnionCall/squa/create"
+	"github.com/OnionCall/squa/join"
 )
 
 var (

@@ -9,8 +9,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/onioncall/squa/common"
-	"github.com/onioncall/squa/services"
+	"github.com/OnionCall/squa/common"
+	"github.com/OnionCall/squa/services"
 )
 
 type createRoomDto struct {
