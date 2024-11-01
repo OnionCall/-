@@ -11,11 +11,11 @@ import (
 
 	// "github.com/charmbracelet/bubbles/cursor"
 	"github.com/charmbracelet/bubbles/textinput"
-	messagegroup "github.com/onioncall/squa/message-group"
+	messagegroup "github.com/OnionCall/squa/message-group"
 
-	//"github.com/onioncall/squa/messagegroup"
-	"github.com/onioncall/squa/entities"
-	"github.com/onioncall/squa/services"
+	//"github.com/OnionCall/squa/messagegroup"
+	"github.com/OnionCall/squa/entities"
+	"github.com/OnionCall/squa/services"
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"

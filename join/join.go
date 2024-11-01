@@ -12,10 +12,10 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/google/uuid"
 
-	//"github.com/onioncall-squa/chatroom"
-	"github.com/onioncall/squa/entities"
-	messagegroup "github.com/onioncall/squa/message-group"
-	"github.com/onioncall/squa/services"
+	//"github.com/OnionCall-squa/chatroom"
+	"github.com/OnionCall/squa/entities"
+	messagegroup "github.com/OnionCall/squa/message-group"
+	"github.com/OnionCall/squa/services"
 
 	// "github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"

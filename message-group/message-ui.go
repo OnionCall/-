@@ -12,9 +12,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
-	"github.com/onioncall/squa/common"
-	"github.com/onioncall/squa/entities"
-	"github.com/onioncall/squa/services"
+	"github.com/OnionCall/squa/common"
+	"github.com/OnionCall/squa/entities"
+	"github.com/OnionCall/squa/services"
 	"golang.org/x/term"
 )
 

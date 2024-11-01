@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/onioncall/squa/common"
-	"github.com/onioncall/squa/services"
-	"github.com/onioncall/squa/welcome"
+	"github.com/OnionCall/squa/common"
+	"github.com/OnionCall/squa/services"
+	"github.com/OnionCall/squa/welcome"
 )
 
 func main() {
